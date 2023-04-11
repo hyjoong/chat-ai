@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 export const Container = styled.input`
+  width: 100%;
   font-size: 24px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.white};
