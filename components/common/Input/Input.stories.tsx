@@ -7,17 +7,7 @@ export default {
   component: Input,
 } as Meta;
 
-const Default: StoryFn<IInputProps> = args => (
-  <div
-    style={{
-      backgroundColor: '#000000',
-      height: '100vh',
-      margin: '10px',
-    }}
-  >
-    <Input {...args} />
-  </div>
-);
+const Default: StoryFn<IInputProps> = args => <Input {...args} />;
 
 export const DefaultInput = Default.bind({});
 

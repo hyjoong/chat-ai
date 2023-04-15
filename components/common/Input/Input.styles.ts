@@ -1,12 +1,16 @@
 import styled from 'styled-components';
+import { IInputProps } from './Input.types';
 
-export const Container = styled.input`
+export const Container = styled.input<IInputProps>`
   width: 100%;
   font-size: 24px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.white};
   background: transparent;
-  border: ${({ theme }) => `2px solid ${theme.colors.gray800}`};
+  border-width: 2px;
+  border-color: ${({ isValid, theme }) =>
+    isValid ? theme.colors.gray800 : theme.colors.red};
+  border-style: solid;
   border-radius: 5px;
   padding: 20px;
   outline: none;
@@ -16,6 +20,7 @@ export const Container = styled.input`
     color: ${({ theme }) => theme.colors.gray800};
   }
   &:focus {
-    border: ${({ theme }) => `2px solid ${theme.colors.white}`};
+    border-color: ${({ isValid, theme }) =>
+      isValid ? theme.colors.white : theme.colors.red};
   }
 `;

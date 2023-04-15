@@ -2,8 +2,8 @@ import React from 'react';
 import * as S from './Input.styles';
 import { IInputProps } from './Input.types';
 
-const Input = ({ ...props }: IInputProps) => {
-  return <S.Container {...props} />;
+const Input = ({ isValid = true, ...props }: IInputProps) => {
+  return <S.Container isValid={isValid} {...props} />;
 };
 
 export default Input;
