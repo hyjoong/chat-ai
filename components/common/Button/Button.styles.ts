@@ -3,8 +3,8 @@ import styled, { css } from 'styled-components';
 
 const buttonSizes = {
   middle: css`
-    padding: 8px 18px;
-    font-size: 14px;
+    padding: 10px 18px;
+    font-size: 16px;
   `,
   large: css`
     width: 100%;

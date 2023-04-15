@@ -6,12 +6,11 @@ export const Container = styled.div`
   height: 100vh;
   padding: 100px 60px;
   margin: 0 auto;
-  /* background-color: black; */
 `;
 
 export const BackgroundImage = styled.img`
   position: absolute;
-  top: 0;
+  top: 20px;
   left: 0;
   width: 100%;
   object-fit: cover;
@@ -20,5 +19,5 @@ export const BackgroundImage = styled.img`
 export const Content = styled.div`
   position: relative;
   z-index: 1;
-  height: 100%;
+  height: 850px;
 `;
