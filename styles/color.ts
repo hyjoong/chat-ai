@@ -10,6 +10,7 @@ const COLOR = {
 
   GRAY900: '#212121',
   GRAY800: '#393939',
+  GRAY700: '#FAFAFA',
 } as const;
 
 export default COLOR;

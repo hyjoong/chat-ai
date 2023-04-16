@@ -16,7 +16,7 @@ const colors = {
   white: COLOR.WHITE,
   gray900: COLOR.GRAY900,
   gray800: COLOR.GRAY800,
- 
+  gray700: COLOR.GRAY700,
 };
 
 export type ColorsTypes = typeof colors;
