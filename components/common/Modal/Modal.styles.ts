@@ -6,7 +6,7 @@ export const Section = styled.div`
   position: absolute;
   top: 100px;
   padding: 20px 30px;
-  width: 375px;
+  width: 382px;
   margin: 0 auto;
   background-color: ${({ theme }) => theme.colors.gray900};
   border-radius: 5px;
@@ -21,9 +21,14 @@ export const Section = styled.div`
 
   .input-field {
     margin-bottom: 30px;
-
     p {
       margin-bottom: 10px;
+    }
+
+    input[type='number']::-webkit-inner-spin-button,
+    input[type='number']::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
   }
 `;
@@ -38,9 +43,14 @@ export const ModalHeader = styled.div`
 export const ButtonBox = styled.div`
   display: flex;
   justify-content: flex-end;
+  height: 40px;
+
   button {
     &:not(:last-child) {
       margin-right: 10px;
+    }
+    &:hover {
+      opacity: 0.8;
     }
   }
 `;
