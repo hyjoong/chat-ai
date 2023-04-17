@@ -6,7 +6,7 @@ export interface IModalProps {
   count: string;
   handleChangeChatInfo: (event: ChangeEvent<HTMLInputElement>) => void;
   handleModalClose: () => void;
-  createChatRoom: () => void;
+  createChatRoom?: () => void;
   handleRoomEditApply: (
     roomId: number,
     roomTitle: string,

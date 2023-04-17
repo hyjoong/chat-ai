@@ -3,7 +3,7 @@ import { ITextProps } from './Text.types';
 
 const TextSizes = {
   small: css`
-    font-size: 22px;
+    font-size: 16px;
   `,
   middle: css`
     font-size: 24px;
@@ -19,6 +19,9 @@ const TextColors = {
   `,
   black: css`
     color: ${({ theme }) => theme.colors.black900};
+  `,
+  gray: css`
+    color: ${({ theme }) => theme.colors.gray500};
   `,
 };
 
