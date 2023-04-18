@@ -23,6 +23,9 @@ const TextColors = {
   gray: css`
     color: ${({ theme }) => theme.colors.gray500};
   `,
+  red: css`
+    color: ${({ theme }) => theme.colors.red};
+  `,
 };
 
 export const Container = styled.p<ITextProps>`
