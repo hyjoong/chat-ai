@@ -48,6 +48,7 @@ const Chat = ({ roomId }: Props) => {
       case '방 수정':
         setIsModalOpen(true);
       case '나가기':
+        handleRoomDelete(parseInt(roomId));
     }
     setIsDropdownOpen(false);
   };
@@ -102,6 +103,21 @@ const Chat = ({ roomId }: Props) => {
       setChatData([]);
     }
   }, [roomId]);
+
+  const handleRoomDelete = (roomId: number) => {
+    if (window.confirm('채팅방에서 나가시겠습니까?')) {
+      const storedChatList = localStorage.getItem('chatList');
+      if (storedChatList) {
+        const chatList = JSON.parse(storedChatList);
+        const newChatList = chatList.filter(
+          (chatRoom: IChatProps) => chatRoom.id !== roomId,
+        );
+        localStorage.setItem('chatList', JSON.stringify(newChatList));
+        router.back();
+      }
+      setIsModalOpen(false);
+    }
+  };
 
   return (
     <S.Container>

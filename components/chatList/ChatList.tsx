@@ -1,8 +1,9 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import IconButton from '../common/IconButton/IconButton';
-import Modal from '../common/Modal';
+import IconButton from '@/components/common/IconButton/IconButton';
+import Modal from '@/components/common/Modal';
 import ChatItem from './chatItem/ChatItem';
+import Text from '@/components/common/Text';
 import * as S from './ChatList.styles';
 import { IChatProps } from './Chat.types';
 
@@ -42,22 +43,27 @@ const ChatList = () => {
     }
   }, []);
 
-  const createChatRoom = () => {
+  const validateCount = () => {
     const newCount = Number(count);
-    if (isNaN(newCount)) {
+    if (isNaN(newCount) || newCount < 2 || 5 < newCount) {
       alert('인원수는 2~5 사이로 입력해주세요.');
-      return;
+      return false;
     }
-    if (newCount < 2 || 5 < newCount) {
-      alert('인원수는 2~5 사이로 입력해주세요.');
-      return;
-    }
+    return true;
+  };
+
+  const createChatRoom = useCallback(() => {
+    const isValid = validateCount();
+    if (!isValid) return;
+
     const newChatList = [...chatList];
     newChatList.push({ id: new Date().getTime(), title, count });
     setChatList(newChatList);
     localStorage.setItem('chatList', JSON.stringify(newChatList));
+    setTitle('');
+    setCount('');
     setIsModalOpen(false);
-  };
+  }, [chatList, count, title]);
 
   const handleRoomClick = (roomId: number) => {
     router.push(`/chat/${roomId}`);
@@ -78,6 +84,8 @@ const ChatList = () => {
 
   const handleRoomEditApply = (id: number, title: string, count: string) => {
     const storedChatList = localStorage.getItem('chatList');
+    const isValid = validateCount();
+    if (!isValid) return;
 
     if (storedChatList) {
       const chatList = JSON.parse(storedChatList);
@@ -100,6 +108,21 @@ const ChatList = () => {
     setIsModalOpen(false);
   };
 
+  const handleRoomDelete = (roomId: number) => {
+    if (window.confirm('채팅방에서 나가시겠습니까?')) {
+      const storedChatList = localStorage.getItem('chatList');
+      if (storedChatList) {
+        const chatList = JSON.parse(storedChatList);
+        const newChatList = chatList.filter(
+          (chatRoom: IChatProps) => chatRoom.id !== roomId,
+        );
+        setChatList(newChatList);
+        localStorage.setItem('chatList', JSON.stringify(newChatList));
+      }
+      setIsModalOpen(false);
+    }
+  };
+
   return (
     <S.Container>
       <S.Header>
@@ -109,16 +132,20 @@ const ChatList = () => {
         />
       </S.Header>
       <S.ChatItemList>
-        {chatList.map(room => (
-          <ChatItem
-            key={room.id}
-            id={room.id}
-            title={room.title}
-            count={room.count}
-            handleRoomClick={handleRoomClick}
-            handleRoomEdit={handleRoomEdit}
-          />
-        ))}
+        {chatList.length === 0 ? (
+          <Text size="large"> 대화 가능한 채팅방이 없습니다</Text>
+        ) : (
+          chatList.map(room => (
+            <ChatItem
+              key={room.id}
+              id={room.id}
+              title={room.title}
+              count={room.count}
+              handleRoomClick={handleRoomClick}
+              handleRoomEdit={handleRoomEdit}
+            />
+          ))
+        )}
       </S.ChatItemList>
       {isModalOpen && (
         <Modal
@@ -130,6 +157,7 @@ const ChatList = () => {
           handleModalClose={handleModalClose}
           createChatRoom={createChatRoom}
           handleRoomEditApply={handleRoomEditApply}
+          handleRoomDelete={handleRoomDelete}
         />
       )}
     </S.Container>

@@ -14,6 +14,7 @@ const Modal = ({
   handleChangeChatInfo,
   handleModalClose,
   createChatRoom,
+  handleRoomDelete,
   handleRoomEditApply,
 }: IModalProps) => {
   const modalRef = useOutsideClick<HTMLDivElement>(handleModalClose);
@@ -54,7 +55,11 @@ const Modal = ({
             </Button>
           ) : (
             <>
-              <Button variant="warning" size="middle">
+              <Button
+                variant="warning"
+                size="middle"
+                onClick={() => handleRoomDelete?.(id)}
+              >
                 삭제
               </Button>
               <Button
