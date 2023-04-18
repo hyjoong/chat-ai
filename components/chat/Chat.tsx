@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import useOutsideClick from 'hooks/useOutsideClick';
+import useOutsideClick from '@/hooks/useOutsideClick';
 import Dropdown from '../common/Dropdown/Dropdown';
 import IconButton from '../common/IconButton/IconButton';
 import Input from '../common/Input';
@@ -8,6 +8,7 @@ import Text from '../common/Text';
 import * as S from './Chat.styles';
 import Modal from '../common/Modal';
 import { IChatProps } from '../chatList/Chat.types';
+import { validateRoomCount } from 'utils/modalInputValidation';
 
 interface Props {
   roomId: string;
@@ -22,15 +23,8 @@ const Chat = ({ roomId }: Props) => {
   const [count, setCount] = useState('');
   const [tempTitle, setTempTitle] = useState('');
   const [tempCount, setTempCount] = useState('');
-
-  const handleChangeChatInfo = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    if (name === 'title') {
-      setTempTitle(value);
-    } else {
-      setTempCount(value);
-    }
-  };
+  const [isValid, setIsValid] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const router = useRouter();
 
@@ -41,12 +35,28 @@ const Chat = ({ roomId }: Props) => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    setIsValid(true);
+  };
+
+  const handleChangeChatInfo = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    if (name === 'title') {
+      setTempTitle(value);
+    } else {
+      setTempCount(value);
+    }
+    if (!isValid) {
+      setIsValid(true);
+      setErrorMessage('');
+    }
   };
 
   const handleOptionSelect = (option: string) => {
     switch (option) {
       case '방 수정':
         setIsModalOpen(true);
+        return;
       case '나가기':
         handleRoomDelete(parseInt(roomId));
     }
@@ -54,6 +64,13 @@ const Chat = ({ roomId }: Props) => {
   };
 
   const handleRoomEditApply = (id: number) => {
+    const isValid = validateRoomCount(tempCount);
+    if (!isValid) {
+      setErrorMessage('2~5명의 인원수를 입력해주세요.');
+      setIsValid(false);
+      return;
+    }
+
     const storedChatList = localStorage.getItem('chatList');
 
     if (storedChatList) {
@@ -103,6 +120,22 @@ const Chat = ({ roomId }: Props) => {
       setChatData([]);
     }
   }, [roomId]);
+
+  const handleSendMessage = (sentence: string) => {
+    const formattedTime = useFormatTime(new Date());
+
+    const newChatData = [
+      ...chatData,
+      {
+        id: roomId,
+        message: sentence,
+        time: new Date(),
+        displayTime: formattedTime,
+      },
+    ];
+    setChatData(newChatData);
+    localStorage.setItem(`chatData_${roomId}`, JSON.stringify(newChatData));
+  };
 
   const handleRoomDelete = (roomId: number) => {
     if (window.confirm('채팅방에서 나가시겠습니까?')) {
@@ -155,6 +188,8 @@ const Chat = ({ roomId }: Props) => {
           title={title}
           count={count}
           type="edit"
+          isValid={isValid}
+          errorMessage={errorMessage}
           handleModalClose={handleModalClose}
           handleRoomEditApply={handleRoomEditApply}
           handleChangeChatInfo={handleChangeChatInfo}

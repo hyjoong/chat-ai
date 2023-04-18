@@ -18,9 +18,13 @@ export const Section = styled.div`
       cursor: pointer;
     }
   }
-
-  .input-field {
+  .input-field:first-child {
     margin-bottom: 30px;
+  }
+  .input-field {
+    &.first {
+      margin-bottom: 30px;
+    }
     p {
       margin-bottom: 10px;
     }
@@ -30,6 +34,10 @@ export const Section = styled.div`
       -webkit-appearance: none;
       margin: 0;
     }
+  }
+
+  .error-message {
+    height: 30px;
   }
 `;
 

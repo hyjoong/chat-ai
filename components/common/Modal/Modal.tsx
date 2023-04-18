@@ -11,6 +11,8 @@ const Modal = ({
   title,
   count,
   type,
+  isValid,
+  errorMessage,
   handleChangeChatInfo,
   handleModalClose,
   createChatRoom,
@@ -26,7 +28,7 @@ const Modal = ({
           <img src="./svgs/x.svg" alt="xIcon" />
         </div>
 
-        <div className="input-field">
+        <div className="input-field first">
           <Text isBold={true}>방 이름</Text>
           <Input
             name="title"
@@ -42,9 +44,16 @@ const Modal = ({
             onChange={handleChangeChatInfo}
             placeholder="인원수를 입력하세요."
             type="number"
+            isValid={isValid}
             defaultValue={count}
           />
         </div>
+        <div className="error-message">
+          <Text size="small" color="red">
+            {errorMessage}
+          </Text>
+        </div>
+
         <S.ButtonBox>
           {type === 'new' ? (
             <Button

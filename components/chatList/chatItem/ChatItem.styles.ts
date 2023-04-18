@@ -4,13 +4,16 @@ export const Container = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding: 10px;
-  height: 60px;
+  padding: 20px 10px;
   border-bottom: ${({ theme }) => `1px solid ${theme.colors.gray800}`};
   cursor: pointer;
 
-  &:active {
+  &:hover {
     background-color: ${({ theme }) => theme.colors.gray900};
+  }
+  
+  &:active {
+    background-color: ${({ theme }) => theme.colors.gray800};
     transition: background-color 0.2s ease-in-out;
   }
 

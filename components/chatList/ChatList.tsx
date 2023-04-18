@@ -6,6 +6,7 @@ import ChatItem from './chatItem/ChatItem';
 import Text from '@/components/common/Text';
 import * as S from './ChatList.styles';
 import { IChatProps } from './Chat.types';
+import { validateRoomCount } from 'utils/modalInputValidation';
 
 const ChatList = () => {
   const router = useRouter();
@@ -15,19 +16,27 @@ const ChatList = () => {
   const [title, setTitle] = useState('');
   const [count, setCount] = useState('');
   const [chatList, setChatList] = useState<IChatProps[]>([]);
+  const [isValid, setIsValid] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChangeChatInfo = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+
     if (name === 'title') {
       setTitle(value);
     } else {
       setCount(value);
+    }
+    if (!isValid) {
+      setIsValid(true);
+      setErrorMessage('');
     }
   };
 
   const handleModalClose = () => {
     setTitle('');
     setCount('');
+    setIsValid(true);
     setIsModalOpen(false);
   };
 
@@ -43,18 +52,13 @@ const ChatList = () => {
     }
   }, []);
 
-  const validateCount = () => {
-    const newCount = Number(count);
-    if (isNaN(newCount) || newCount < 2 || 5 < newCount) {
-      alert('인원수는 2~5 사이로 입력해주세요.');
-      return false;
-    }
-    return true;
-  };
-
   const createChatRoom = useCallback(() => {
-    const isValid = validateCount();
-    if (!isValid) return;
+    const isValid = validateRoomCount(count);
+    if (!isValid) {
+      setErrorMessage('2~5명의 인원수를 입력해주세요.');
+      setIsValid(false);
+      return;
+    }
 
     const newChatList = [...chatList];
     newChatList.push({ id: new Date().getTime(), title, count });
@@ -83,9 +87,13 @@ const ChatList = () => {
   };
 
   const handleRoomEditApply = (id: number, title: string, count: string) => {
+    const isValid = validateRoomCount(count);
+    if (!isValid) {
+      setErrorMessage('2~5명의 인원수를 입력해주세요.');
+      setIsValid(false);
+      return;
+    }
     const storedChatList = localStorage.getItem('chatList');
-    const isValid = validateCount();
-    if (!isValid) return;
 
     if (storedChatList) {
       const chatList = JSON.parse(storedChatList);
@@ -153,6 +161,8 @@ const ChatList = () => {
           title={title}
           count={count}
           type={modalType}
+          isValid={isValid}
+          errorMessage={errorMessage}
           handleChangeChatInfo={handleChangeChatInfo}
           handleModalClose={handleModalClose}
           createChatRoom={createChatRoom}
