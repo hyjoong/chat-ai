@@ -4,10 +4,10 @@ import useOutsideClick from 'hooks/useOutsideClick';
 import Dropdown from '../common/Dropdown/Dropdown';
 import IconButton from '../common/IconButton/IconButton';
 import Input from '../common/Input';
+import Text from '../common/Text';
 import * as S from './Chat.styles';
 import Modal from '../common/Modal';
 import { IChatProps } from '../chatList/Chat.types';
-import Text from '../common/Text';
 
 interface Props {
   roomId: string;
@@ -37,7 +37,7 @@ const Chat = ({ roomId }: Props) => {
   const handleDropdown = () => {
     setIsDropdownOpen(prev => !prev);
   };
-  const dropdownRef = useOutsideClick(handleDropdown);
+  const dropdownRef = useOutsideClick<HTMLDivElement>(handleDropdown);
 
   const handleModalClose = () => {
     setIsModalOpen(false);

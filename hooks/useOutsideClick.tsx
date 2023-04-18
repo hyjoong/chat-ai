@@ -1,24 +1,24 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-const useOutsideClick = (onClose: () => void) => {
-  const ref = useRef(null);
+const useOutsideClick = <T extends HTMLElement>(onClose: () => void) => {
+  const ref = useRef<T>(null);
 
   const clickListener = useCallback(
-    (e: MouseEvent) => {
-      if (ref.current === null) return;
-      if (!(ref.current! as any).contains(e.target)) {
-        onClose?.();
-      }
+    (e: PointerEvent) => {
+      if (!ref.current || ref.current.contains(e.target as Node)) return;
+      onClose?.();
     },
     [onClose],
   );
+
   useEffect(() => {
-    document.addEventListener('mouseup', clickListener);
+    document.addEventListener('pointerup', clickListener);
 
     return () => {
-      document.removeEventListener('mouseup', clickListener);
+      document.removeEventListener('pointerup', clickListener);
     };
-  });
+  }, [clickListener]);
+
   return ref;
 };
 

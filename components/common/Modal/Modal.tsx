@@ -16,7 +16,7 @@ const Modal = ({
   createChatRoom,
   handleRoomEditApply,
 }: IModalProps) => {
-  const modalRef = useOutsideClick(handleModalClose);
+  const modalRef = useOutsideClick<HTMLDivElement>(handleModalClose);
 
   return (
     <S.Container>
