@@ -7,6 +7,7 @@ import Text from '@/components/common/Text';
 import * as S from './ChatList.styles';
 import { IChatProps } from './Chat.types';
 import { validateRoomCount } from 'utils/modalInputValidation';
+import { removeChatRoom, getChatList } from 'storage/service';
 
 const ChatList = () => {
   const router = useRouter();
@@ -46,9 +47,9 @@ const ChatList = () => {
   };
 
   useEffect(() => {
-    const storedChatList = localStorage.getItem('chatList');
-    if (storedChatList) {
-      setChatList(JSON.parse(storedChatList));
+    const response = getChatList();
+    if (response) {
+      setChatList(response);
     }
   }, []);
 
@@ -118,15 +119,9 @@ const ChatList = () => {
 
   const handleRoomDelete = (roomId: number) => {
     if (window.confirm('채팅방에서 나가시겠습니까?')) {
-      const storedChatList = localStorage.getItem('chatList');
-      if (storedChatList) {
-        const chatList = JSON.parse(storedChatList);
-        const newChatList = chatList.filter(
-          (chatRoom: IChatProps) => chatRoom.id !== roomId,
-        );
-        setChatList(newChatList);
-        localStorage.setItem('chatList', JSON.stringify(newChatList));
-      }
+      const response = removeChatRoom(roomId);
+      if (response) setChatList(response);
+
       setIsModalOpen(false);
     }
   };

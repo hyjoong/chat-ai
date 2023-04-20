@@ -9,6 +9,7 @@ import * as S from './Chat.styles';
 import Modal from '../../common/Modal';
 import { IChatProps } from '../chatList/Chat.types';
 import { validateRoomCount } from 'utils/modalInputValidation';
+import { removeChatRoom } from 'storage/service';
 
 interface Props {
   roomId: string;
@@ -122,7 +123,7 @@ const Chat = ({ roomId }: Props) => {
   }, [roomId]);
 
   const handleSendMessage = async () => {
-    const sentence = 'd';
+    const sentence = '안녕 !';
     // const formattedTime = useFormatTime(new Date());
 
     // try catch  문 이후 채팅 데이터 성공적으로 받아오면
@@ -150,15 +151,8 @@ const Chat = ({ roomId }: Props) => {
 
   const handleRoomDelete = (roomId: number) => {
     if (window.confirm('채팅방에서 나가시겠습니까?')) {
-      const storedChatList = localStorage.getItem('chatList');
-      if (storedChatList) {
-        const chatList = JSON.parse(storedChatList);
-        const newChatList = chatList.filter(
-          (chatRoom: IChatProps) => chatRoom.id !== roomId,
-        );
-        localStorage.setItem('chatList', JSON.stringify(newChatList));
-        router.back();
-      }
+      const isSuccess = removeChatRoom(roomId);
+      if (isSuccess) router.back();
       setIsModalOpen(false);
     }
   };
