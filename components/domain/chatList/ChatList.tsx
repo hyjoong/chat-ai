@@ -5,9 +5,13 @@ import Modal from '@/components/common/Modal';
 import ChatItem from '../chatItem/ChatItem';
 import Text from '@/components/common/Text';
 import * as S from './ChatList.styles';
-import { IChatProps } from './Chat.types';
+import { IChatProps } from './ChatList.types';
 import { validateRoomCount } from 'utils/modalInputValidation';
-import { removeChatRoom, getChatList } from 'storage/service';
+import {
+  removeChatRoom,
+  getChatList,
+  updateChatInfoById,
+} from 'storage/service';
 
 const ChatList = () => {
   const router = useRouter();
@@ -94,24 +98,10 @@ const ChatList = () => {
       setIsValid(false);
       return;
     }
-    const storedChatList = localStorage.getItem('chatList');
 
-    if (storedChatList) {
-      const chatList = JSON.parse(storedChatList);
-      const newChatList = chatList.map((chatRoom: IChatProps) => {
-        if (chatRoom.id === id) {
-          return {
-            ...chatRoom,
-            title: title,
-            count: count,
-          };
-        } else {
-          return chatRoom;
-        }
-      });
-
-      setChatList(newChatList);
-      localStorage.setItem('chatList', JSON.stringify(newChatList));
+    const updatedChatInfo = updateChatInfoById(title, count, id);
+    if (updatedChatInfo) {
+      setChatList(updatedChatInfo);
     }
 
     setIsModalOpen(false);

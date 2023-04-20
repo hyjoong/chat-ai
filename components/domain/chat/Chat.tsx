@@ -7,9 +7,12 @@ import Input from '../../common/Input';
 import Text from '../../common/Text';
 import * as S from './Chat.styles';
 import Modal from '../../common/Modal';
-import { IChatProps } from '../chatList/Chat.types';
 import { validateRoomCount } from 'utils/modalInputValidation';
-import { getChatRoomById, removeChatRoom } from 'storage/service';
+import {
+  getChatRoomById,
+  removeChatRoom,
+  updateChatInfoById,
+} from 'storage/service';
 
 interface Props {
   roomId: string;
@@ -57,6 +60,7 @@ const Chat = ({ roomId }: Props) => {
     switch (option) {
       case '방 수정':
         setIsModalOpen(true);
+        setIsDropdownOpen(false);
         return;
       case '나가기':
         handleRoomDelete(parseInt(roomId));
@@ -72,28 +76,12 @@ const Chat = ({ roomId }: Props) => {
       return;
     }
 
-    const storedChatList = localStorage.getItem('chatList');
-
-    if (storedChatList) {
-      const chatList = JSON.parse(storedChatList);
-      const newChatList = chatList.map((chatRoom: IChatProps) => {
-        if (chatRoom.id == id) {
-          return {
-            ...chatRoom,
-            title: tempTitle,
-            count: tempCount,
-          };
-        } else {
-          return chatRoom;
-        }
-      });
-
-      localStorage.setItem('chatList', JSON.stringify(newChatList));
+    const updatedChatInfo = updateChatInfoById(tempTitle, tempCount, id);
+    if (updatedChatInfo) {
+      setTitle(tempTitle);
+      setCount(tempCount);
+      setIsModalOpen(false);
     }
-
-    setTitle(tempTitle);
-    setCount(tempCount);
-    setIsModalOpen(false);
   };
 
   useEffect(() => {
