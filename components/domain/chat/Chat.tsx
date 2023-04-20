@@ -1,12 +1,12 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import useOutsideClick from '@/hooks/useOutsideClick';
-import Dropdown from '../common/Dropdown/Dropdown';
-import IconButton from '../common/IconButton/IconButton';
-import Input from '../common/Input';
-import Text from '../common/Text';
+import Dropdown from '../../common/Dropdown/Dropdown';
+import IconButton from '../../common/IconButton/IconButton';
+import Input from '../../common/Input';
+import Text from '../../common/Text';
 import * as S from './Chat.styles';
-import Modal from '../common/Modal';
+import Modal from '../../common/Modal';
 import { IChatProps } from '../chatList/Chat.types';
 import { validateRoomCount } from 'utils/modalInputValidation';
 
@@ -121,20 +121,31 @@ const Chat = ({ roomId }: Props) => {
     }
   }, [roomId]);
 
-  const handleSendMessage = (sentence: string) => {
-    const formattedTime = useFormatTime(new Date());
+  const handleSendMessage = async () => {
+    const sentence = 'd';
+    // const formattedTime = useFormatTime(new Date());
 
-    const newChatData = [
-      ...chatData,
-      {
-        id: roomId,
-        message: sentence,
-        time: new Date(),
-        displayTime: formattedTime,
-      },
-    ];
-    setChatData(newChatData);
-    localStorage.setItem(`chatData_${roomId}`, JSON.stringify(newChatData));
+    // try catch  문 이후 채팅 데이터 성공적으로 받아오면
+    // 아래 로직을 통해서 채팅 데이터 저장
+    // const params = new URLSearchParams({
+    //   sentence: sentence,
+    // });
+    const response = await fetch(
+      `/api/chat?sentence=${encodeURIComponent(sentence)}`,
+    );
+    const { data } = await response.json();
+
+    // const newChatData = [
+    //   ...chatData,
+    //   {
+    //     id: roomId,
+    //     message: sentence,
+    //     time: new Date(),
+    //     displayTime: formattedTime,
+    //   },
+    // ];
+    // setChatData(newChatData);
+    // localStorage.setItem(`chatData_${roomId}`, JSON.stringify(newChatData));
   };
 
   const handleRoomDelete = (roomId: number) => {
@@ -180,7 +191,7 @@ const Chat = ({ roomId }: Props) => {
       </S.Header>
       <label>
         <Input placeholder="입력해주세요."></Input>
-        <IconButton iconUrl="/svgs/send.svg" />
+        <IconButton iconUrl="/svgs/send.svg" onClick={handleSendMessage} />
       </label>
       {isModalOpen && (
         <Modal

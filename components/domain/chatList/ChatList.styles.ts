@@ -14,10 +14,4 @@ export const ChatItemList = styled.div`
   ::-webkit-scrollbar {
     display: none;
   }
-
-  > div {
-    &:not(:last-child) {
-      /* margin: 10px 0; */
-    }
-  }
 `;

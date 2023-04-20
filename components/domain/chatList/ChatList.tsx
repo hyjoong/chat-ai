@@ -2,7 +2,7 @@ import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import IconButton from '@/components/common/IconButton/IconButton';
 import Modal from '@/components/common/Modal';
-import ChatItem from './chatItem/ChatItem';
+import ChatItem from '../chatItem/ChatItem';
 import Text from '@/components/common/Text';
 import * as S from './ChatList.styles';
 import { IChatProps } from './Chat.types';

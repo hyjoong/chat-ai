@@ -1,4 +1,4 @@
-import Chat from '@/components/chat/Chat';
+import Chat from '@/components/domain/chat/Chat';
 import React from 'react';
 
 import { NextPageContext } from 'next';
