@@ -6,6 +6,14 @@ export const getChatList = () => {
   return getItem(StorageKey.CHAT_LIST);
 };
 
+export const getChatRoomById = (chatId: number) => {
+  const storedChatList = getItem(StorageKey.CHAT_LIST);
+  const findedChatRoom = storedChatList.find(
+    (chat: IChatProps) => chat.id === chatId,
+  );
+  return findedChatRoom;
+};
+
 export const removeChatRoom = (chatId: number) => {
   const storedChatList = getItem(StorageKey.CHAT_LIST);
   const filteredChatList = storedChatList.filter(

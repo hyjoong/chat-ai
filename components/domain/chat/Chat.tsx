@@ -9,7 +9,7 @@ import * as S from './Chat.styles';
 import Modal from '../../common/Modal';
 import { IChatProps } from '../chatList/Chat.types';
 import { validateRoomCount } from 'utils/modalInputValidation';
-import { removeChatRoom } from 'storage/service';
+import { getChatRoomById, removeChatRoom } from 'storage/service';
 
 interface Props {
   roomId: string;
@@ -97,18 +97,13 @@ const Chat = ({ roomId }: Props) => {
   };
 
   useEffect(() => {
-    const storedChatList = localStorage.getItem('chatList');
+    const chatData = getChatRoomById(parseInt(roomId));
 
-    if (storedChatList) {
-      const chatRoom = JSON.parse(storedChatList);
-
-      const nowChatRoom = chatRoom.find(
-        (chat: IChatProps) => chat.id === parseInt(roomId),
-      );
-      setTitle(nowChatRoom?.title);
-      setTempTitle(nowChatRoom?.title);
-      setCount(nowChatRoom?.count);
-      setTempCount(nowChatRoom?.count);
+    if (chatData) {
+      setTitle(chatData.title);
+      setTempTitle(chatData.title);
+      setCount(chatData.count);
+      setTempCount(chatData.count);
     }
   }, []);
 
