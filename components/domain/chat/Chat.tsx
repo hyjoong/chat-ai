@@ -13,10 +13,13 @@ import {
   removeChatRoom,
   updateChatInfoById,
 } from 'storage/service';
+import getCurrentTime from 'utils/getCurrentTime';
 
 interface Props {
   roomId: string;
 }
+
+const OPTION_LIST = ['방 수정', '나가기'];
 
 const Chat = ({ roomId }: Props) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -25,12 +28,18 @@ const Chat = ({ roomId }: Props) => {
   const [chatData, setChatData] = useState<any[]>([]);
   const [title, setTitle] = useState('');
   const [count, setCount] = useState('');
-  const [tempTitle, setTempTitle] = useState('');
-  const [tempCount, setTempCount] = useState('');
+  const [editingTitle, setEditingTitle] = useState('');
+  const [editingCount, setEditingCount] = useState('');
   const [isValid, setIsValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
   const router = useRouter();
+
+  const [message, setMessage] = useState('');
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setMessage(event.target.value);
+  };
 
   const handleDropdown = () => {
     setIsDropdownOpen(prev => !prev);
@@ -46,9 +55,9 @@ const Chat = ({ roomId }: Props) => {
     const { name, value } = event.target;
 
     if (name === 'title') {
-      setTempTitle(value);
+      setEditingTitle(value);
     } else {
-      setTempCount(value);
+      setEditingCount(value);
     }
     if (!isValid) {
       setIsValid(true);
@@ -69,17 +78,17 @@ const Chat = ({ roomId }: Props) => {
   };
 
   const handleRoomEditApply = (id: number) => {
-    const isValid = validateRoomCount(tempCount);
+    const isValid = validateRoomCount(editingCount);
     if (!isValid) {
       setErrorMessage('2~5명의 인원수를 입력해주세요.');
       setIsValid(false);
       return;
     }
 
-    const updatedChatInfo = updateChatInfoById(tempTitle, tempCount, id);
+    const updatedChatInfo = updateChatInfoById(editingTitle, editingCount, id);
     if (updatedChatInfo) {
-      setTitle(tempTitle);
-      setCount(tempCount);
+      setTitle(editingTitle);
+      setCount(editingCount);
       setIsModalOpen(false);
     }
   };
@@ -89,47 +98,64 @@ const Chat = ({ roomId }: Props) => {
 
     if (chatData) {
       setTitle(chatData.title);
-      setTempTitle(chatData.title);
+      setEditingTitle(chatData.title);
       setCount(chatData.count);
-      setTempCount(chatData.count);
+      setEditingCount(chatData.count);
     }
   }, []);
 
   useEffect(() => {
     const storedChatData = localStorage.getItem(`chatData_${roomId}`);
-
     if (storedChatData) {
       setChatData(JSON.parse(storedChatData));
-    } else {
-      setChatData([]);
     }
   }, [roomId]);
 
-  const handleSendMessage = async () => {
-    const sentence = '안녕 !';
-    // const formattedTime = useFormatTime(new Date());
+  const getRandomNumber = () => {
+    // 랜덤 숫자를 반환해야 하지만 제일 마지막에 전송한 유저의 id는 겹치지 않아야한다.
+    const roomCount = parseInt(count);
+    const randomNumber = Math.floor(Math.random() * (roomCount - 1)) + 1;
+    return randomNumber === roomCount ? roomCount - 1 : randomNumber;
+  };
 
-    // try catch  문 이후 채팅 데이터 성공적으로 받아오면
-    // 아래 로직을 통해서 채팅 데이터 저장
-    // const params = new URLSearchParams({
-    //   sentence: sentence,
-    // });
-    const response = await fetch(
-      `/api/chat?sentence=${encodeURIComponent(sentence)}`,
-    );
-    const { data } = await response.json();
+  const handleSendMessage = async (event: ChangeEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-    // const newChatData = [
-    //   ...chatData,
-    //   {
-    //     id: roomId,
-    //     message: sentence,
-    //     time: new Date(),
-    //     displayTime: formattedTime,
-    //   },
-    // ];
-    // setChatData(newChatData);
-    // localStorage.setItem(`chatData_${roomId}`, JSON.stringify(newChatData));
+    try {
+      const response = await fetch(
+        `/api/chat?sentence=${encodeURIComponent(message)}`,
+      );
+      const { data } = await response.json();
+
+      saveChatData(data);
+    } catch (error) {
+      console.error('Failure in getting chatting data:', error);
+    }
+  };
+
+  // TODO: 채팅 데이터 저장 로직 분리
+  const saveChatData = (chatData: string) => {
+    const storedChatData = localStorage.getItem(`chatData_${roomId}`);
+
+    const chatItem = {
+      id: roomId,
+      message: chatData,
+      time: new Date(),
+      displayTime: getCurrentTime(),
+      userId: getRandomNumber(),
+      // ai인지 판단하는 boolean or 1~인원수 랜덤숫자 부여
+    };
+
+    if (storedChatData) {
+      const existingChatData = JSON.parse(storedChatData);
+
+      const newChatData = [...existingChatData, chatItem];
+      localStorage.setItem(`chatData_${roomId}`, JSON.stringify(newChatData));
+      setChatData(newChatData);
+    } else {
+      localStorage.setItem(`chatData_${roomId}`, JSON.stringify([chatItem]));
+      setChatData([chatItem]);
+    }
   };
 
   const handleRoomDelete = (roomId: number) => {
@@ -166,10 +192,15 @@ const Chat = ({ roomId }: Props) => {
           )}
         </div>
       </S.Header>
-      <label>
-        <Input placeholder="입력해주세요."></Input>
-        <IconButton iconUrl="/svgs/send.svg" onClick={handleSendMessage} />
-      </label>
+      <div>
+        {chatData.map(item => (
+          <div key={item.time}>{item.message}</div>
+        ))}
+      </div>
+      <form onSubmit={handleSendMessage}>
+        <Input placeholder="입력해주세요." onChange={handleInputChange}></Input>
+        <IconButton iconUrl="/svgs/send.svg" />
+      </form>
       {isModalOpen && (
         <Modal
           id={parseInt(roomId)}
@@ -186,7 +217,5 @@ const Chat = ({ roomId }: Props) => {
     </S.Container>
   );
 };
-
-const OPTION_LIST = ['방 수정', '나가기'];
 
 export default Chat;

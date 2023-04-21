@@ -7,7 +7,7 @@ export const Container = styled.div`
   justify-content: space-between;
 
   height: 100%;
-  label {
+  form {
     position: relative;
 
     button {

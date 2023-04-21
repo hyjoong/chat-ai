@@ -14,7 +14,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       body: JSON.stringify({
         model: 'text-davinci-003',
         prompt: sentence,
-        max_tokens: 150,
+        max_tokens: 100,
       }),
     });
 
