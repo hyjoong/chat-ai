@@ -5,7 +5,7 @@ const Layout = ({ children }: PropsWithChildren) => {
   return (
     <S.Container>
       <S.BackgroundImage
-        src="images/mobile-background.png"
+        src="/images/mobile-background.png"
         alt="Mobile background"
       />
       <S.Content>{children}</S.Content>

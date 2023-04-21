@@ -37,23 +37,12 @@ class MyDocument extends Document {
       <Html>
         <Head>
           <meta charSet="utf-8" />
-          <link rel="shortcut icon" href="/favicon.svg" type="image/svg" />
-          <meta property="og:title" content="" />
+          <meta property="og:title" content="chatting bot" />
           <meta property="og:image" content="" />
-          <meta property="og:description" content="" />
+          <meta property="og:description" content="chatbot" />
           <meta property="og:url" content="//" />
-          <meta name="description" content="" />
-          <meta name="keywords" content="" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;500;600;700;800;900&display=swap"
-            rel="preload"
-            as="style"
-          />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;500;600;700;800;900&display=swap"
-            rel="stylesheet"
-          />
+          <meta name="description" content="chatbot" />
+          <meta name="keywords" content="chatbot" />
         </Head>
         <body>
           <Main />

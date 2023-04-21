@@ -37,7 +37,6 @@ class MyDocument extends Document {
       <Html>
         <Head>
           <meta charSet="utf-8" />
-          <link rel="shortcut icon" href="/favicon.svg" type="image/svg" />
           <meta property="og:title" content="" />
           <meta property="og:image" content="" />
           <meta property="og:description" content="" />

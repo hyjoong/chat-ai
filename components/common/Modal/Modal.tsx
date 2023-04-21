@@ -25,7 +25,7 @@ const Modal = ({
     <S.Container>
       <S.Section ref={modalRef}>
         <div className="icon-box" onClick={handleModalClose}>
-          <img src="./svgs/x.svg" alt="xIcon" />
+          <img src="/svgs/x.svg" alt="xIcon" />
         </div>
 
         <div className="input-field first">
