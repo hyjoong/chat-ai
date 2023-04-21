@@ -1,16 +1,21 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const validateApiKey = async (apiKey: string) => {
-  const response = await fetch('https://api.openai.com/v1/models', {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-  });
+  try {
+    const response = await fetch('https://api.openai.com/v1/models', {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
 
-  if (response.status === 200) {
-    return true;
-  } else {
+    if (response.status === 200) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('API key is Invalid:', error);
     return false;
   }
 };
