@@ -8,13 +8,18 @@ export const Container = styled.div<{ isMine: boolean }>`
 
 export const Profile = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
   margin-right: 10px;
+
+  p {
+    margin: 4px auto;
+  }
 `;
 
 export const MessageBox = styled.div`
   padding: 10px 12px;
-  width: 200px;
+  max-width: 200px;
   background-color: #fef01b;
   border-radius: 10px;
   line-height: 20px;

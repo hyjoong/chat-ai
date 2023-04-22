@@ -51,6 +51,7 @@ const Chat = ({ roomId }: Props) => {
   const handleModalClose = () => {
     setIsModalOpen(false);
     setIsValid(true);
+    setErrorMessage('');
   };
 
   const handleChangeChatInfo = (event: ChangeEvent<HTMLInputElement>) => {
@@ -215,23 +216,26 @@ const Chat = ({ roomId }: Props) => {
               userId={item.userId}
               key={item.time}
               message={item.message}
+              displayTime={item.displayTime}
             />
           ))}
         </S.ChatMessageList>
       </div>
-      {isLoading && (
-        <Text size="small" color="gray" isBold={true}>
-          {TYPING_STATUS_MESSAGE}
-        </Text>
-      )}
-      <form onSubmit={handleSendMessage}>
-        <Input
-          placeholder="입력해주세요."
-          onChange={handleInputChange}
-          value={message}
-        ></Input>
-        <IconButton iconUrl="/svgs/send.svg" />
-      </form>
+      <div>
+        {isLoading && (
+          <Text size="small" color="gray" isBold={true}>
+            {TYPING_STATUS_MESSAGE}
+          </Text>
+        )}
+        <form onSubmit={handleSendMessage}>
+          <Input
+            placeholder="입력해주세요."
+            onChange={handleInputChange}
+            value={message}
+          ></Input>
+          <IconButton iconUrl="/svgs/send.svg" />
+        </form>
+      </div>
       {isModalOpen && (
         <Modal
           id={parseInt(roomId)}
