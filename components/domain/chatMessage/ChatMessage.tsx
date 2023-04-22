@@ -3,7 +3,7 @@ import React from 'react';
 import * as S from './ChatMessage.styles';
 import { IChatMessageProps } from './ChatMessage.types';
 
-const ChatMessage = ({ message, userId }: IChatMessageProps) => {
+const ChatMessage = ({ message, userId, displayTime }: IChatMessageProps) => {
   return (
     <S.Container isMine={userId === 0}>
       <S.Profile>
@@ -16,7 +16,10 @@ const ChatMessage = ({ message, userId }: IChatMessageProps) => {
           />
         )}
       </S.Profile>
-      <S.MessageBox>{message}</S.MessageBox>
+      <div>
+        <S.MessageBox>{message}</S.MessageBox>
+        <S.Time>{displayTime}</S.Time>
+      </div>
     </S.Container>
   );
 };
