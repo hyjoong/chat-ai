@@ -10,7 +10,7 @@ export const getItem = (key: StorageKey) => {
   }
 };
 
-export const setItem = (key: StorageKey, value: IChatProps[]) => {
+export const setItem = (key: StorageKey, value: unknown) => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch (error) {

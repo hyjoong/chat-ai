@@ -46,3 +46,7 @@ export const removeChatRoom = (chatId: number) => {
   setItem(StorageKey.CHAT_LIST, filteredChatList);
   return filteredChatList;
 };
+
+export const setOpenApiKey = (apiKey: string) => {
+  setItem(StorageKey.API_KEY, apiKey);
+};

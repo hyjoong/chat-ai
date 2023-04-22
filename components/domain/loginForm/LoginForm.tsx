@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Text from '@/components/common/Text';
-
 import * as S from './LoginForm.styles';
+import { setOpenApiKey } from 'storage/service';
 
 const LoginForm = () => {
   const router = useRouter();
@@ -35,6 +35,7 @@ const LoginForm = () => {
       });
 
       if (response.ok) {
+        setOpenApiKey(apiKey);
         router.push('/chat-list');
       } else {
         setErrorMessage('API key is invalid. Please try again.');
