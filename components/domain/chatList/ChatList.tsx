@@ -12,6 +12,11 @@ import {
   getChatList,
   updateChatInfoById,
 } from 'storage/service';
+import {
+  CHAT_MEMBER_RANGE_MESSAGE,
+  LEAVE_CHATROOM_CONFIRM_MESSAGE,
+  NO_CHAT_ROOM_LIST_MESSAGE,
+} from '@constants/constants';
 
 const ChatList = () => {
   const router = useRouter();
@@ -43,6 +48,7 @@ const ChatList = () => {
     setCount('');
     setIsValid(true);
     setIsModalOpen(false);
+    setErrorMessage('');
   };
 
   const handleModalOpen = (type: 'new' | 'edit') => {
@@ -60,7 +66,7 @@ const ChatList = () => {
   const createChatRoom = useCallback(() => {
     const isValid = validateRoomCount(count);
     if (!isValid) {
-      setErrorMessage('2~5명의 인원수를 입력해주세요.');
+      setErrorMessage(CHAT_MEMBER_RANGE_MESSAGE);
       setIsValid(false);
       return;
     }
@@ -94,7 +100,7 @@ const ChatList = () => {
   const handleRoomEditApply = (id: number, title: string, count: string) => {
     const isValid = validateRoomCount(count);
     if (!isValid) {
-      setErrorMessage('2~5명의 인원수를 입력해주세요.');
+      setErrorMessage(CHAT_MEMBER_RANGE_MESSAGE);
       setIsValid(false);
       return;
     }
@@ -108,7 +114,7 @@ const ChatList = () => {
   };
 
   const handleRoomDelete = (roomId: number) => {
-    if (window.confirm('채팅방에서 나가시겠습니까?')) {
+    if (window.confirm(LEAVE_CHATROOM_CONFIRM_MESSAGE)) {
       const response = removeChatRoom(roomId);
       if (response) setChatList(response);
 
@@ -126,7 +132,7 @@ const ChatList = () => {
       </S.Header>
       <S.ChatItemList>
         {chatList.length === 0 ? (
-          <Text size="large"> 대화 가능한 채팅방이 없습니다</Text>
+          <Text size="large"> {NO_CHAT_ROOM_LIST_MESSAGE}</Text>
         ) : (
           chatList.map(room => (
             <ChatItem

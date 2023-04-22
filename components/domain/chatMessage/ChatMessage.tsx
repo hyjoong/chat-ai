@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Text from '@/components/common/Text';
 import * as S from './ChatMessage.styles';
 import { IChatMessageProps } from './ChatMessage.types';
-import { NICKNAME_LIST } from '@constants/nickname';
+import { NICKNAME_LIST } from '@constants/constants';
 
 const ChatMessage = ({ message, userId, displayTime }: IChatMessageProps) => {
   return (

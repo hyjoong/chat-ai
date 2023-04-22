@@ -16,13 +16,18 @@ import {
 } from 'storage/service';
 import getCurrentTime from 'utils/getCurrentTime';
 import ChatMessage from '../chatMessage/ChatMessage';
+import { getLastUserId } from 'utils/getLastUserId';
+import {
+  CHAT_MEMBER_RANGE_MESSAGE,
+  DROPDOWN_OPTION_LIST,
+  LEAVE_CHATROOM_CONFIRM_MESSAGE,
+  NO_CHAT_ROOM_MESSAGE,
+  TYPING_STATUS_MESSAGE,
+} from '@constants/constants';
 
 interface Props {
   roomId: string;
 }
-
-const TYPING_STATUS_MESSAGE = '상대방이 메시지를 입력 중입니다...';
-const OPTION_LIST = ['방 수정', '나가기'];
 
 const Chat = ({ roomId }: Props) => {
   const router = useRouter();
@@ -40,7 +45,7 @@ const Chat = ({ roomId }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiKey, setApiKey] = useState('');
   const [message, setMessage] = useState('');
-
+  const [roomErrorMessage, setRoomErrorMessage] = useState('');
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
   };
@@ -85,7 +90,7 @@ const Chat = ({ roomId }: Props) => {
   const handleRoomEditApply = (id: number) => {
     const isValid = validateRoomCount(editingCount);
     if (!isValid) {
-      setErrorMessage('2~5명의 인원수를 입력해주세요.');
+      setErrorMessage(CHAT_MEMBER_RANGE_MESSAGE);
       setIsValid(false);
       return;
     }
@@ -101,7 +106,10 @@ const Chat = ({ roomId }: Props) => {
   useEffect(() => {
     const chatData = getChatRoomById(parseInt(roomId));
     const apiKeyData = getOpenApiKey();
-
+    if (chatData === undefined) {
+      setRoomErrorMessage(NO_CHAT_ROOM_MESSAGE);
+      return;
+    }
     if (chatData) {
       setTitle(chatData.title);
       setEditingTitle(chatData.title);
@@ -180,7 +188,7 @@ const Chat = ({ roomId }: Props) => {
   };
 
   const handleRoomDelete = (roomId: number) => {
-    if (window.confirm('채팅방에서 나가시겠습니까?')) {
+    if (window.confirm(LEAVE_CHATROOM_CONFIRM_MESSAGE)) {
       const isSuccess = removeChatRoom(roomId);
       if (isSuccess) router.back();
       setIsModalOpen(false);
@@ -211,22 +219,28 @@ const Chat = ({ roomId }: Props) => {
             {isDropdownOpen && (
               <Dropdown
                 ref={dropdownRef}
-                options={OPTION_LIST}
+                options={DROPDOWN_OPTION_LIST}
                 handleOptionSelect={handleOptionSelect}
               />
             )}
           </div>
         </S.Header>
-        <S.ChatMessageList ref={messageListRef}>
-          {chatData.map(item => (
-            <ChatMessage
-              userId={item.userId}
-              key={item.time}
-              message={item.message}
-              displayTime={item.displayTime}
-            />
-          ))}
-        </S.ChatMessageList>
+        {roomErrorMessage !== '' ? (
+          <Text>{roomErrorMessage}</Text>
+        ) : (
+          <>
+            <S.ChatMessageList ref={messageListRef}>
+              {chatData.map(item => (
+                <ChatMessage
+                  userId={item.userId}
+                  key={item.time}
+                  message={item.message}
+                  displayTime={item.displayTime}
+                />
+              ))}
+            </S.ChatMessageList>
+          </>
+        )}
       </div>
       <div>
         {isLoading && (
@@ -239,10 +253,12 @@ const Chat = ({ roomId }: Props) => {
             placeholder="입력해주세요."
             onChange={handleInputChange}
             value={message}
+            disabled={roomErrorMessage !== ''}
           ></Input>
           <IconButton iconUrl="/svgs/send.svg" />
         </form>
       </div>
+
       {isModalOpen && (
         <Modal
           id={parseInt(roomId)}
