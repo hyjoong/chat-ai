@@ -50,3 +50,7 @@ export const removeChatRoom = (chatId: number) => {
 export const setOpenApiKey = (apiKey: string) => {
   setItem(StorageKey.API_KEY, apiKey);
 };
+
+export const getOpenApiKey = () => {
+  return getItem(StorageKey.API_KEY);
+};

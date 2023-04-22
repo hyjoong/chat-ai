@@ -1,4 +1,3 @@
-import { IChatProps } from '@/components/domain/chatList/ChatList.types';
 import { StorageKey } from './storageKey';
 
 export const getItem = (key: StorageKey) => {

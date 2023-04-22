@@ -10,6 +10,7 @@ import Modal from '../../common/Modal';
 import { validateRoomCount } from 'utils/modalInputValidation';
 import {
   getChatRoomById,
+  getOpenApiKey,
   removeChatRoom,
   updateChatInfoById,
 } from 'storage/service';
@@ -24,6 +25,8 @@ const TYPING_STATUS_MESSAGE = '상대방이 메시지를 입력 중입니다...'
 const OPTION_LIST = ['방 수정', '나가기'];
 
 const Chat = ({ roomId }: Props) => {
+  const router = useRouter();
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   // TODO: type 지정
@@ -35,8 +38,7 @@ const Chat = ({ roomId }: Props) => {
   const [isValid, setIsValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
+  const [apiKey, setApiKey] = useState('');
   const [message, setMessage] = useState('');
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -98,12 +100,16 @@ const Chat = ({ roomId }: Props) => {
 
   useEffect(() => {
     const chatData = getChatRoomById(parseInt(roomId));
+    const apiKeyData = getOpenApiKey();
 
     if (chatData) {
       setTitle(chatData.title);
       setEditingTitle(chatData.title);
       setCount(chatData.count);
       setEditingCount(chatData.count);
+    }
+    if (apiKeyData) {
+      setApiKey(apiKeyData);
     }
   }, []);
 
@@ -127,9 +133,10 @@ const Chat = ({ roomId }: Props) => {
     setIsLoading(true);
     setMessage('');
     saveChatData(message, true);
+
     try {
       const response = await fetch(
-        `/api/chat?sentence=${encodeURIComponent(message)}`,
+        `/api/chat?sentence=${encodeURIComponent(message)}&apiKey=${apiKey}`,
       );
       const { data } = await response.json();
 
