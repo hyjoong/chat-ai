@@ -9,7 +9,9 @@ export const Container = styled.div`
   height: 100%;
   form {
     position: relative;
-
+    input {
+      padding-right: 60px;
+    }
     button {
       position: absolute;
       top: 12px;
@@ -23,6 +25,7 @@ export const Header = styled.div`
   justify-content: space-between;
   width: 100%;
   padding: 15px 0;
+  margin-bottom: 20px;
   border-bottom: ${({ theme }) => `1px solid ${theme.colors.gray800}`};
 
   .header-left {
@@ -58,4 +61,18 @@ export const RoomCountText = styled(Text)`
   color: ${({ theme }) => theme.colors.red};
   font-size: 14px;
   font-weight: 600;
+`;
+
+export const ChatMessageList = styled.div`
+  > div {
+    &:not(:last-child) {
+      margin-bottom: 20px;
+    }
+  }
+  max-height: 640px;
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
 `;

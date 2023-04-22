@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import useOutsideClick from '@/hooks/useOutsideClick';
 import Dropdown from '../../common/Dropdown/Dropdown';
@@ -14,11 +14,13 @@ import {
   updateChatInfoById,
 } from 'storage/service';
 import getCurrentTime from 'utils/getCurrentTime';
+import ChatMessage from '../chatMessage/ChatMessage';
 
 interface Props {
   roomId: string;
 }
 
+const TYPING_STATUS_MESSAGE = '상대방이 메시지를 입력 중입니다...';
 const OPTION_LIST = ['방 수정', '나가기'];
 
 const Chat = ({ roomId }: Props) => {
@@ -32,7 +34,7 @@ const Chat = ({ roomId }: Props) => {
   const [editingCount, setEditingCount] = useState('');
   const [isValid, setIsValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const [message, setMessage] = useState('');
@@ -120,21 +122,32 @@ const Chat = ({ roomId }: Props) => {
 
   const handleSendMessage = async (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+    if (message === '' || isLoading) return;
+    setIsLoading(true);
+    setMessage('');
+    saveChatData(message, true);
     try {
       const response = await fetch(
         `/api/chat?sentence=${encodeURIComponent(message)}`,
       );
       const { data } = await response.json();
 
-      saveChatData(data);
+      saveChatData(data, false);
     } catch (error) {
       console.error('Failure in getting chatting data:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
+  }, [isLoading]);
+
+  const messageListRef = useRef<HTMLDivElement>(null);
+
   // TODO: 채팅 데이터 저장 로직 분리
-  const saveChatData = (chatData: string) => {
+  const saveChatData = (chatData: string, isMyChat: boolean) => {
     const storedChatData = localStorage.getItem(`chatData_${roomId}`);
 
     const chatItem = {
@@ -142,7 +155,7 @@ const Chat = ({ roomId }: Props) => {
       message: chatData,
       time: new Date(),
       displayTime: getCurrentTime(),
-      userId: getRandomNumber(),
+      userId: isMyChat ? 0 : getRandomNumber(),
       // ai인지 판단하는 boolean or 1~인원수 랜덤숫자 부여
     };
 
@@ -168,37 +181,55 @@ const Chat = ({ roomId }: Props) => {
 
   return (
     <S.Container>
-      <S.Header>
-        <div className="header-left">
-          <IconButton
-            onClick={() => router.back()}
-            iconUrl="/svgs/arrow-back.svg"
-          />
-          <div className="header-info">
-            <Text>{title}</Text>
-            <Text size="small" color="gray">
-              {count}
-            </Text>
-          </div>
-        </div>
-        <div className="header-right">
-          <IconButton iconUrl="/svgs/three-dots.svg" onClick={handleDropdown} />
-          {isDropdownOpen && (
-            <Dropdown
-              ref={dropdownRef}
-              options={OPTION_LIST}
-              handleOptionSelect={handleOptionSelect}
-            />
-          )}
-        </div>
-      </S.Header>
       <div>
-        {chatData.map(item => (
-          <div key={item.time}>{item.message}</div>
-        ))}
+        <S.Header>
+          <div className="header-left">
+            <IconButton
+              onClick={() => router.back()}
+              iconUrl="/svgs/arrow-back.svg"
+            />
+            <div className="header-info">
+              <Text>{title}</Text>
+              <Text size="small" color="gray">
+                {count}
+              </Text>
+            </div>
+          </div>
+          <div className="header-right">
+            <IconButton
+              iconUrl="/svgs/three-dots.svg"
+              onClick={handleDropdown}
+            />
+            {isDropdownOpen && (
+              <Dropdown
+                ref={dropdownRef}
+                options={OPTION_LIST}
+                handleOptionSelect={handleOptionSelect}
+              />
+            )}
+          </div>
+        </S.Header>
+        <S.ChatMessageList ref={messageListRef}>
+          {chatData.map(item => (
+            <ChatMessage
+              userId={item.userId}
+              key={item.time}
+              message={item.message}
+            />
+          ))}
+        </S.ChatMessageList>
       </div>
+      {isLoading && (
+        <Text size="small" color="gray" isBold={true}>
+          {TYPING_STATUS_MESSAGE}
+        </Text>
+      )}
       <form onSubmit={handleSendMessage}>
-        <Input placeholder="입력해주세요." onChange={handleInputChange}></Input>
+        <Input
+          placeholder="입력해주세요."
+          onChange={handleInputChange}
+          value={message}
+        ></Input>
         <IconButton iconUrl="/svgs/send.svg" />
       </form>
       {isModalOpen && (
