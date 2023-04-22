@@ -15,6 +15,7 @@ export const Container = styled.input<IInputProps>`
   padding: 20px;
   outline: none;
   transition: all 0.15s ease-in-out;
+  text-align: ${({ textAlign }) => textAlign};
 
   &::placeholder {
     color: ${({ theme }) => theme.colors.gray800};
