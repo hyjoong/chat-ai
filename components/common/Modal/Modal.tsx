@@ -34,6 +34,7 @@ const Modal = ({
             name="title"
             onChange={handleChangeChatInfo}
             placeholder="방이름을 입력하세요."
+            textAlign="right"
             defaultValue={title}
           />
         </div>
@@ -45,6 +46,7 @@ const Modal = ({
             placeholder="인원수를 입력하세요."
             type="number"
             isValid={isValid}
+            textAlign="right"
             defaultValue={count}
           />
         </div>
@@ -75,6 +77,7 @@ const Modal = ({
                 variant="primary"
                 size="middle"
                 onClick={() => handleRoomEditApply(id, title, count)}
+                disabled={title === '' || count === ''}
               >
                 수정
               </Button>
