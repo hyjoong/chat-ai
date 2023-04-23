@@ -176,11 +176,13 @@ const Chat = ({ roomId }: Props) => {
     if (isMyChat) saveChatData(sentence, lastUserId, isMyChat);
     setMessageSent(false);
 
+    const messageTexts = chatData.slice(-5).map(item => item.message);
+
     try {
       const response = await fetch(
         `/api/chat?sentence=${encodeURIComponent(
           sentence,
-        )}&apiKey=${apiKey}&roomCount=${count}`,
+        )}&apiKey=${apiKey}&roomCount=${count}&messageTexts=${messageTexts}`,
       );
 
       if (response?.status === 401) {
@@ -219,7 +221,7 @@ const Chat = ({ roomId }: Props) => {
       time: new Date(),
       displayTime: getCurrentTime(),
       userId: isMyChat ? 0 : getRandomNumber(lastUserId),
-      // ai인지 판단하는 boolean or 1~인원수 랜덤숫자 부여
+      role: isMyChat ? 'user' : 'assistant',
     };
 
     if (storedChatData) {
