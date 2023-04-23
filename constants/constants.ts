@@ -3,6 +3,10 @@ export const DROPDOWN_OPTION_LIST = ['방 수정', '나가기'];
 
 export const NO_CHAT_ROOM_LIST_MESSAGE = '대화 가능한 채팅방이 없습니다';
 export const NO_CHAT_ROOM_MESSAGE = '채팅방을 찾을 수 없습니다.';
+export const API_FAIL_ROOM_MESSAGE =
+  'API 통신 중 오류가 발생했습니다.\n채팅 리스트 페이지로 이동하여\n다시 채팅방에 접속해주세요.';
+export const API_KEY_LIMIT_EXCEEDED =
+  'API KEY 사용량이 초과되었습니다. 다른 유효한 API KEY를 사용하여 로그인해 주세요.';
 
 export const MIN_CHAT_MEMBERS = 2;
 export const MAX_CHAT_MEMBERS = 5;
