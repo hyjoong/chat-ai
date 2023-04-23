@@ -11,13 +11,13 @@ import { validateRoomCount } from 'utils/modalInputValidation';
 import {
   getChatRoomById,
   getLastMessageFromChatData,
+  getLastUserId,
   getOpenApiKey,
   removeChatRoom,
   updateChatInfoById,
 } from 'storage/service';
 import getCurrentTime from 'utils/getCurrentTime';
 import ChatMessage from '../chatMessage/ChatMessage';
-import { getLastUserId } from 'utils/getLastUserId';
 import {
   API_FAIL_ROOM_MESSAGE,
   API_KEY_LIMIT_EXCEEDED,
