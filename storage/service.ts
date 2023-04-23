@@ -54,3 +54,9 @@ export const setOpenApiKey = (apiKey: string) => {
 export const getOpenApiKey = () => {
   return getItem(StorageKey.API_KEY);
 };
+
+export const getLastMessageFromChatData = (roomId: string) => {
+  const storedChatData = localStorage.getItem(`chatData_${roomId}`);
+  if (!storedChatData) return;
+  return JSON.parse(storedChatData)?.at(-1)?.message;
+};
