@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
@@ -69,7 +70,9 @@ const LoginForm = () => {
         </Button>
         <S.KeyInfo>
           <Text size="small" isUnderline={true}>
-            KEY 발급받는 방법
+            <Link href="https://platform.openai.com/account/api-keys">
+              KEY 발급받는 방법
+            </Link>
           </Text>
         </S.KeyInfo>
       </div>
