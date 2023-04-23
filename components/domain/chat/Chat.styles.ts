@@ -27,6 +27,7 @@ export const Header = styled.div`
   padding: 15px 0;
   margin-bottom: 20px;
   border-bottom: ${({ theme }) => `1px solid ${theme.colors.gray800}`};
+  box-shadow: 0 2px #82828240;
 
   .header-left {
     display: flex;

@@ -10,6 +10,7 @@ import Modal from '../../common/Modal';
 import { validateRoomCount } from 'utils/modalInputValidation';
 import {
   getChatRoomById,
+  getLastMessageFromChatData,
   getOpenApiKey,
   removeChatRoom,
   updateChatInfoById,
@@ -18,10 +19,13 @@ import getCurrentTime from 'utils/getCurrentTime';
 import ChatMessage from '../chatMessage/ChatMessage';
 import { getLastUserId } from 'utils/getLastUserId';
 import {
+  API_FAIL_ROOM_MESSAGE,
+  API_KEY_LIMIT_EXCEEDED,
   CHAT_MEMBER_RANGE_MESSAGE,
   DROPDOWN_OPTION_LIST,
   LEAVE_CHATROOM_CONFIRM_MESSAGE,
   NO_CHAT_ROOM_MESSAGE,
+  RESPONSE_TIME_LIMIT,
   TYPING_STATUS_MESSAGE,
 } from '@constants/constants';
 
@@ -46,6 +50,9 @@ const Chat = ({ roomId }: Props) => {
   const [apiKey, setApiKey] = useState('');
   const [message, setMessage] = useState('');
   const [roomErrorMessage, setRoomErrorMessage] = useState('');
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [messageSent, setMessageSent] = useState(false);
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
   };
@@ -128,29 +135,66 @@ const Chat = ({ roomId }: Props) => {
     }
   }, [roomId]);
 
-  const getRandomNumber = () => {
-    // 랜덤 숫자를 반환해야 하지만 제일 마지막에 전송한 유저의 id는 겹치지 않아야한다.
+  useEffect(() => {
+    if (!messageSent) return;
+    if (!roomId) return;
+    let intervalId: NodeJS.Timeout | undefined = undefined;
+    if (timeLeft > 0) {
+      intervalId = setInterval(() => {
+        setTimeLeft(prevTime => prevTime - 1);
+      }, 1000);
+    } else if (timeLeft === 0) {
+      clearInterval(intervalId);
+      const lastMessage = getLastMessageFromChatData(roomId);
+      handleSendMessage(lastMessage, false);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [timeLeft, messageSent]);
+
+  const getRandomNumber = (lastUserId: number) => {
     const roomCount = parseInt(count);
-    const randomNumber = Math.floor(Math.random() * (roomCount - 1)) + 1;
-    return randomNumber === roomCount ? roomCount - 1 : randomNumber;
+
+    let randomNumber = Math.floor(Math.random() * (roomCount - 1)) + 1;
+    while (randomNumber === lastUserId) {
+      randomNumber = Math.floor(Math.random() * (roomCount - 1)) + 1;
+    }
+    return randomNumber;
   };
 
-  const handleSendMessage = async (event: ChangeEvent<HTMLFormElement>) => {
+  const onSubmit = (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (message === '' || isLoading) return;
+
+    handleSendMessage(message, true);
+  };
+
+  const handleSendMessage = async (sentence: string, isMyChat: boolean) => {
+    if (sentence === '' || isLoading) return;
     setIsLoading(true);
     setMessage('');
-    saveChatData(message, true);
+    const lastUserId = getLastUserId(roomId);
+    if (isMyChat) saveChatData(sentence, lastUserId, isMyChat);
+    setMessageSent(false);
 
     try {
       const response = await fetch(
-        `/api/chat?sentence=${encodeURIComponent(message)}&apiKey=${apiKey}`,
+        `/api/chat?sentence=${encodeURIComponent(
+          sentence,
+        )}&apiKey=${apiKey}&roomCount=${count}`,
       );
+
+      if (response?.status === 401) {
+        alert(API_KEY_LIMIT_EXCEEDED);
+        localStorage.removeItem('apiKey');
+        router.push('/login');
+      }
       const { data } = await response.json();
 
-      saveChatData(data, false);
+      saveChatData(data.message.content, lastUserId, false);
+      setTimeLeft(RESPONSE_TIME_LIMIT);
+      setMessageSent(true);
     } catch (error) {
-      console.error('Failure in getting chatting data:', error);
+      setRoomErrorMessage(API_FAIL_ROOM_MESSAGE);
     } finally {
       setIsLoading(false);
     }
@@ -163,15 +207,18 @@ const Chat = ({ roomId }: Props) => {
   const messageListRef = useRef<HTMLDivElement>(null);
 
   // TODO: 채팅 데이터 저장 로직 분리
-  const saveChatData = (chatData: string, isMyChat: boolean) => {
+  const saveChatData = (
+    chatData: string,
+    lastUserId: number,
+    isMyChat: boolean,
+  ) => {
     const storedChatData = localStorage.getItem(`chatData_${roomId}`);
-
     const chatItem = {
       id: roomId,
       message: chatData,
       time: new Date(),
       displayTime: getCurrentTime(),
-      userId: isMyChat ? 0 : getRandomNumber(),
+      userId: isMyChat ? 0 : getRandomNumber(lastUserId),
       // ai인지 판단하는 boolean or 1~인원수 랜덤숫자 부여
     };
 
@@ -248,7 +295,7 @@ const Chat = ({ roomId }: Props) => {
             {TYPING_STATUS_MESSAGE}
           </Text>
         )}
-        <form onSubmit={handleSendMessage}>
+        <form onSubmit={onSubmit}>
           <Input
             placeholder="입력해주세요."
             onChange={handleInputChange}
@@ -270,6 +317,7 @@ const Chat = ({ roomId }: Props) => {
           handleModalClose={handleModalClose}
           handleRoomEditApply={handleRoomEditApply}
           handleChangeChatInfo={handleChangeChatInfo}
+          handleRoomDelete={handleRoomDelete}
         />
       )}
     </S.Container>
