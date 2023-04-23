@@ -60,3 +60,9 @@ export const getLastMessageFromChatData = (roomId: string) => {
   if (!storedChatData) return;
   return JSON.parse(storedChatData)?.at(-1)?.message;
 };
+
+export const getLastUserId = (roomId: string) => {
+  const storedChatData = localStorage.getItem(`chatData_${roomId}`);
+  if (!storedChatData) return 0;
+  return JSON.parse(storedChatData).at(-1).userId;
+};
