@@ -47,7 +47,7 @@ const Chat = ({ roomId }: IChatProps) => {
   const [message, setMessage] = useState('');
   const [roomErrorMessage, setRoomErrorMessage] = useState('');
   const [timeLeft, setTimeLeft] = useState(0);
-  const [messageSent, setMessageSent] = useState(false);
+  const [isMessageSent, setIsMessageSent] = useState(false);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
@@ -135,7 +135,7 @@ const Chat = ({ roomId }: IChatProps) => {
   }, [roomId]);
 
   useEffect(() => {
-    if (!messageSent) return;
+    if (!isMessageSent) return;
     if (!roomId) return;
     let intervalId: NodeJS.Timeout | undefined = undefined;
     if (timeLeft > 0) {
@@ -149,7 +149,7 @@ const Chat = ({ roomId }: IChatProps) => {
     }
 
     return () => clearInterval(intervalId);
-  }, [timeLeft, messageSent]);
+  }, [timeLeft, isMessageSent]);
 
   const getRandomNumber = (lastUserId: number) => {
     const roomCount = parseInt(count);
@@ -176,7 +176,7 @@ const Chat = ({ roomId }: IChatProps) => {
     setMessage('');
     const lastUserId = getLastUserId(roomId);
     if (isMyChat) saveChatData(sentence, lastUserId, isMyChat);
-    setMessageSent(false);
+    setIsMessageSent(false);
 
     const messageTexts = chatData.slice(-5).map(item => item.message);
 
@@ -196,7 +196,7 @@ const Chat = ({ roomId }: IChatProps) => {
 
       saveChatData(data.message.content, lastUserId, false);
       setTimeLeft(RESPONSE_TIME_LIMIT);
-      setMessageSent(true);
+      setIsMessageSent(true);
     } catch (error) {
       setRoomErrorMessage(API_FAIL_ROOM_MESSAGE);
     } finally {
