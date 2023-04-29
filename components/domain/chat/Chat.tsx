@@ -28,7 +28,7 @@ import {
   RESPONSE_TIME_LIMIT,
   TYPING_STATUS_MESSAGE,
 } from '@constants/constants';
-import { IChatData, IChatProps } from './Chat.types';
+import { IChatData, IChatProps, TOptionSelect } from './Chat.types';
 
 const Chat = ({ roomId }: IChatProps) => {
   const router = useRouter();
@@ -78,14 +78,18 @@ const Chat = ({ roomId }: IChatProps) => {
     }
   };
 
-  const handleOptionSelect = (option: string) => {
+  const handleOptionSelect = (option: TOptionSelect) => {
     switch (option) {
       case '방 수정':
         setIsModalOpen(true);
         setIsDropdownOpen(false);
-        return;
+        break;
       case '나가기':
         handleRoomDelete(parseInt(roomId));
+        break;
+      default:
+        console.error(`Invalid option: ${option}`);
+        break;
     }
     setIsDropdownOpen(false);
   };

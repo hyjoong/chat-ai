@@ -10,3 +10,4 @@ export interface IChatData {
   time: Date;
   userId: number;
 }
+export type TOptionSelect = '방 수정' | '나가기';
