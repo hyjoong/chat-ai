@@ -113,12 +113,11 @@ const Chat = ({ roomId }: IChatProps) => {
       setRoomErrorMessage(NO_CHAT_ROOM_MESSAGE);
       return;
     }
-    if (chatData) {
-      setTitle(chatData.title);
-      setEditingTitle(chatData.title);
-      setCount(chatData.count);
-      setEditingCount(chatData.count);
-    }
+    setTitle(chatData.title);
+    setEditingTitle(chatData.title);
+    setCount(chatData.count);
+    setEditingCount(chatData.count);
+
     if (apiKeyData) {
       setApiKey(apiKeyData);
     }
@@ -151,9 +150,12 @@ const Chat = ({ roomId }: IChatProps) => {
   const getRandomNumber = (lastUserId: number) => {
     const roomCount = parseInt(count);
 
+    if (roomCount === 2) {
+      return 1;
+    }
     let randomNumber = Math.floor(Math.random() * (roomCount - 1)) + 1;
-    while (randomNumber === lastUserId) {
-      randomNumber = Math.floor(Math.random() * (roomCount - 1)) + 1;
+    if (randomNumber === lastUserId) {
+      randomNumber = (randomNumber % roomCount) + 1;
     }
     return randomNumber;
   };
