@@ -11,6 +11,7 @@ import {
   removeChatRoom,
   getChatList,
   updateChatInfoById,
+  setChatRoomList,
 } from 'storage/service';
 import {
   CHAT_MEMBER_RANGE_MESSAGE,
@@ -74,7 +75,7 @@ const ChatList = () => {
     const newChatList = [...chatList];
     newChatList.push({ id: new Date().getTime(), title, count });
     setChatList(newChatList);
-    localStorage.setItem('chatList', JSON.stringify(newChatList));
+    setChatRoomList(newChatList);
     setTitle('');
     setCount('');
     setIsModalOpen(false);
