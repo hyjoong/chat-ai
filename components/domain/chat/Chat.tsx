@@ -28,18 +28,14 @@ import {
   RESPONSE_TIME_LIMIT,
   TYPING_STATUS_MESSAGE,
 } from '@constants/constants';
+import { IChatData, IChatProps } from './Chat.types';
 
-interface Props {
-  roomId: string;
-}
-
-const Chat = ({ roomId }: Props) => {
+const Chat = ({ roomId }: IChatProps) => {
   const router = useRouter();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // TODO: type 지정
-  const [chatData, setChatData] = useState<any[]>([]);
+  const [chatData, setChatData] = useState<IChatData[]>([]);
   const [title, setTitle] = useState('');
   const [count, setCount] = useState('');
   const [editingTitle, setEditingTitle] = useState('');
@@ -215,7 +211,7 @@ const Chat = ({ roomId }: Props) => {
     isMyChat: boolean,
   ) => {
     const storedChatData = localStorage.getItem(`chatData_${roomId}`);
-    const chatItem = {
+    const chatItem: IChatData = {
       id: roomId,
       message: chatData,
       time: new Date(),
@@ -279,10 +275,10 @@ const Chat = ({ roomId }: Props) => {
         ) : (
           <>
             <S.ChatMessageList ref={messageListRef}>
-              {chatData.map(item => (
+              {chatData.map((item, index) => (
                 <ChatMessage
                   userId={item.userId}
-                  key={item.time}
+                  key={item.message + index}
                   message={item.message}
                   displayTime={item.displayTime}
                 />

@@ -47,7 +47,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       message: 'Success in getting chatting data',
       data: data.choices[0],
     });
-  } catch (error: any) {
+  } catch (error) {
     res.status(400).json({ error });
   }
 };
