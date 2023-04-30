@@ -3,3 +3,5 @@ export interface IChatProps {
   title: string;
   count: string;
 }
+
+export type TModalType = 'new' | 'edit';
