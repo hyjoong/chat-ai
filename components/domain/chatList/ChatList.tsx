@@ -5,12 +5,13 @@ import Modal from '@/components/common/Modal';
 import ChatItem from '../chatItem/ChatItem';
 import Text from '@/components/common/Text';
 import * as S from './ChatList.styles';
-import { IChatProps } from './ChatList.types';
+import { IChatProps, TModalType } from './ChatList.types';
 import { validateRoomCount } from 'utils/modalInputValidation';
 import {
   removeChatRoom,
   getChatList,
   updateChatInfoById,
+  setChatRoomList,
 } from 'storage/service';
 import {
   CHAT_MEMBER_RANGE_MESSAGE,
@@ -21,13 +22,24 @@ import {
 const ChatList = () => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<'new' | 'edit'>('new');
+  const [modalType, setModalType] = useState<TModalType>('new');
   const [roomId, setRoomId] = useState(0);
   const [title, setTitle] = useState('');
   const [count, setCount] = useState('');
   const [chatList, setChatList] = useState<IChatProps[]>([]);
   const [isValid, setIsValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const getChatData = () => {
+    const chatData = getChatList();
+    if (chatData) {
+      setChatList(chatData);
+    }
+  };
+
+  useEffect(() => {
+    getChatData();
+  }, []);
 
   const handleChangeChatInfo = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -51,17 +63,10 @@ const ChatList = () => {
     setErrorMessage('');
   };
 
-  const handleModalOpen = (type: 'new' | 'edit') => {
+  const handleModalOpen = (type: TModalType) => {
     setIsModalOpen(true);
     setModalType(type);
   };
-
-  useEffect(() => {
-    const response = getChatList();
-    if (response) {
-      setChatList(response);
-    }
-  }, []);
 
   const createChatRoom = useCallback(() => {
     const isValid = validateRoomCount(count);
@@ -74,7 +79,7 @@ const ChatList = () => {
     const newChatList = [...chatList];
     newChatList.push({ id: new Date().getTime(), title, count });
     setChatList(newChatList);
-    localStorage.setItem('chatList', JSON.stringify(newChatList));
+    setChatRoomList(newChatList);
     setTitle('');
     setCount('');
     setIsModalOpen(false);

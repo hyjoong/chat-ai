@@ -28,18 +28,14 @@ import {
   RESPONSE_TIME_LIMIT,
   TYPING_STATUS_MESSAGE,
 } from '@constants/constants';
+import { IChatData, IChatProps, TOptionSelect } from './Chat.types';
 
-interface Props {
-  roomId: string;
-}
-
-const Chat = ({ roomId }: Props) => {
+const Chat = ({ roomId }: IChatProps) => {
   const router = useRouter();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // TODO: type 지정
-  const [chatData, setChatData] = useState<any[]>([]);
+  const [chatData, setChatData] = useState<IChatData[]>([]);
   const [title, setTitle] = useState('');
   const [count, setCount] = useState('');
   const [editingTitle, setEditingTitle] = useState('');
@@ -51,7 +47,7 @@ const Chat = ({ roomId }: Props) => {
   const [message, setMessage] = useState('');
   const [roomErrorMessage, setRoomErrorMessage] = useState('');
   const [timeLeft, setTimeLeft] = useState(0);
-  const [messageSent, setMessageSent] = useState(false);
+  const [isMessageSent, setIsMessageSent] = useState(false);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
@@ -82,14 +78,18 @@ const Chat = ({ roomId }: Props) => {
     }
   };
 
-  const handleOptionSelect = (option: string) => {
+  const handleOptionSelect = (option: TOptionSelect) => {
     switch (option) {
       case '방 수정':
         setIsModalOpen(true);
         setIsDropdownOpen(false);
-        return;
+        break;
       case '나가기':
         handleRoomDelete(parseInt(roomId));
+        break;
+      default:
+        console.error(`Invalid option: ${option}`);
+        break;
     }
     setIsDropdownOpen(false);
   };
@@ -117,12 +117,11 @@ const Chat = ({ roomId }: Props) => {
       setRoomErrorMessage(NO_CHAT_ROOM_MESSAGE);
       return;
     }
-    if (chatData) {
-      setTitle(chatData.title);
-      setEditingTitle(chatData.title);
-      setCount(chatData.count);
-      setEditingCount(chatData.count);
-    }
+    setTitle(chatData.title);
+    setEditingTitle(chatData.title);
+    setCount(chatData.count);
+    setEditingCount(chatData.count);
+
     if (apiKeyData) {
       setApiKey(apiKeyData);
     }
@@ -136,7 +135,7 @@ const Chat = ({ roomId }: Props) => {
   }, [roomId]);
 
   useEffect(() => {
-    if (!messageSent) return;
+    if (!isMessageSent) return;
     if (!roomId) return;
     let intervalId: NodeJS.Timeout | undefined = undefined;
     if (timeLeft > 0) {
@@ -150,14 +149,17 @@ const Chat = ({ roomId }: Props) => {
     }
 
     return () => clearInterval(intervalId);
-  }, [timeLeft, messageSent]);
+  }, [timeLeft, isMessageSent]);
 
   const getRandomNumber = (lastUserId: number) => {
     const roomCount = parseInt(count);
 
+    if (roomCount === 2) {
+      return 1;
+    }
     let randomNumber = Math.floor(Math.random() * (roomCount - 1)) + 1;
-    while (randomNumber === lastUserId) {
-      randomNumber = Math.floor(Math.random() * (roomCount - 1)) + 1;
+    if (randomNumber === lastUserId) {
+      randomNumber = (randomNumber % roomCount) + 1;
     }
     return randomNumber;
   };
@@ -174,7 +176,7 @@ const Chat = ({ roomId }: Props) => {
     setMessage('');
     const lastUserId = getLastUserId(roomId);
     if (isMyChat) saveChatData(sentence, lastUserId, isMyChat);
-    setMessageSent(false);
+    setIsMessageSent(false);
 
     const messageTexts = chatData.slice(-5).map(item => item.message);
 
@@ -194,7 +196,7 @@ const Chat = ({ roomId }: Props) => {
 
       saveChatData(data.message.content, lastUserId, false);
       setTimeLeft(RESPONSE_TIME_LIMIT);
-      setMessageSent(true);
+      setIsMessageSent(true);
     } catch (error) {
       setRoomErrorMessage(API_FAIL_ROOM_MESSAGE);
     } finally {
@@ -215,7 +217,7 @@ const Chat = ({ roomId }: Props) => {
     isMyChat: boolean,
   ) => {
     const storedChatData = localStorage.getItem(`chatData_${roomId}`);
-    const chatItem = {
+    const chatItem: IChatData = {
       id: roomId,
       message: chatData,
       time: new Date(),
@@ -279,10 +281,10 @@ const Chat = ({ roomId }: Props) => {
         ) : (
           <>
             <S.ChatMessageList ref={messageListRef}>
-              {chatData.map(item => (
+              {chatData.map((item, index) => (
                 <ChatMessage
                   userId={item.userId}
-                  key={item.time}
+                  key={item.message + index}
                   message={item.message}
                   displayTime={item.displayTime}
                 />

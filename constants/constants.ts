@@ -1,5 +1,7 @@
+import { TOptionSelect } from '@/components/domain/chat/Chat.types';
+
 export const NICKNAME_LIST = ['', 'Sally', 'Jacob', 'Tomas', 'Bob'];
-export const DROPDOWN_OPTION_LIST = ['방 수정', '나가기'];
+export const DROPDOWN_OPTION_LIST: TOptionSelect[] = ['방 수정', '나가기'];
 
 export const NO_CHAT_ROOM_LIST_MESSAGE = '대화 가능한 채팅방이 없습니다';
 export const NO_CHAT_ROOM_MESSAGE = '채팅방을 찾을 수 없습니다.';

@@ -51,6 +51,10 @@ export const setOpenApiKey = (apiKey: string) => {
   setItem(StorageKey.API_KEY, apiKey);
 };
 
+export const setChatRoomList = (chatList: IChatProps[]) => {
+  setItem(StorageKey.CHAT_LIST, chatList);
+};
+
 export const getOpenApiKey = () => {
   return getItem(StorageKey.API_KEY);
 };

@@ -12,5 +12,5 @@ const Template: StoryFn<IDropdownProps> = args => <Dropdown {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  options: ['옵션 1', '옵션 2'],
+  options: ['방 수정', '나가기'],
 };

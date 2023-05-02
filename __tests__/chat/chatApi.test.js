@@ -24,7 +24,7 @@ describe('Chat API test', () => {
       expect.objectContaining({
         success: true,
         message: 'Success in getting chatting data',
-        data: expect.any(String),
+        data: expect(String),
       }),
     );
   });
