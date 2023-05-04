@@ -18,10 +18,10 @@ import {
   LEAVE_CHATROOM_CONFIRM_MESSAGE,
   NO_CHAT_ROOM_LIST_MESSAGE,
 } from '@constants/constants';
+import { useBooleanState } from '@/hooks/useBooleanState';
 
 const ChatList = () => {
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<TModalType>('new');
   const [roomId, setRoomId] = useState(0);
   const [title, setTitle] = useState('');
@@ -29,6 +29,8 @@ const ChatList = () => {
   const [chatList, setChatList] = useState<IChatProps[]>([]);
   const [isValid, setIsValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isModalOpen, openModal, closeModal, toggleModal] =
+    useBooleanState(false);
 
   const getChatData = () => {
     const chatData = getChatList();
@@ -59,12 +61,12 @@ const ChatList = () => {
     setTitle('');
     setCount('');
     setIsValid(true);
-    setIsModalOpen(false);
+    closeModal();
     setErrorMessage('');
   };
 
   const handleModalOpen = (type: TModalType) => {
-    setIsModalOpen(true);
+    openModal();
     setModalType(type);
   };
 
@@ -82,7 +84,7 @@ const ChatList = () => {
     setChatRoomList(newChatList);
     setTitle('');
     setCount('');
-    setIsModalOpen(false);
+    closeModal();
   }, [chatList, count, title]);
 
   const handleRoomClick = (roomId: number) => {
@@ -115,15 +117,14 @@ const ChatList = () => {
       setChatList(updatedChatInfo);
     }
 
-    setIsModalOpen(false);
+    closeModal();
   };
-
   const handleRoomDelete = (roomId: number) => {
     if (window.confirm(LEAVE_CHATROOM_CONFIRM_MESSAGE)) {
       const response = removeChatRoom(roomId);
       if (response) setChatList(response);
 
-      setIsModalOpen(false);
+      closeModal();
     }
   };
 

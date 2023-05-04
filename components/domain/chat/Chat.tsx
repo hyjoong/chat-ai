@@ -29,12 +29,12 @@ import {
   TYPING_STATUS_MESSAGE,
 } from '@constants/constants';
 import { IChatData, IChatProps, TOptionSelect } from './Chat.types';
+import { useBooleanState } from '@/hooks/useBooleanState';
 
 const Chat = ({ roomId }: IChatProps) => {
   const router = useRouter();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [chatData, setChatData] = useState<IChatData[]>([]);
   const [title, setTitle] = useState('');
   const [count, setCount] = useState('');
@@ -49,6 +49,9 @@ const Chat = ({ roomId }: IChatProps) => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [isMessageSent, setIsMessageSent] = useState(false);
 
+  const [isModalOpen, openModal, closeModal, toggleModal] =
+    useBooleanState(false);
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
   };
@@ -59,7 +62,7 @@ const Chat = ({ roomId }: IChatProps) => {
   const dropdownRef = useOutsideClick<HTMLDivElement>(handleDropdown);
 
   const handleModalClose = () => {
-    setIsModalOpen(false);
+    closeModal();
     setIsValid(true);
     setErrorMessage('');
   };
@@ -81,7 +84,7 @@ const Chat = ({ roomId }: IChatProps) => {
   const handleOptionSelect = (option: TOptionSelect) => {
     switch (option) {
       case '방 수정':
-        setIsModalOpen(true);
+        openModal();
         setIsDropdownOpen(false);
         break;
       case '나가기':
@@ -106,7 +109,7 @@ const Chat = ({ roomId }: IChatProps) => {
     if (updatedChatInfo) {
       setTitle(editingTitle);
       setCount(editingCount);
-      setIsModalOpen(false);
+      closeModal();
     }
   };
 
@@ -242,7 +245,7 @@ const Chat = ({ roomId }: IChatProps) => {
     if (window.confirm(LEAVE_CHATROOM_CONFIRM_MESSAGE)) {
       const isSuccess = removeChatRoom(roomId);
       if (isSuccess) router.back();
-      setIsModalOpen(false);
+      closeModal();
     }
   };
 
