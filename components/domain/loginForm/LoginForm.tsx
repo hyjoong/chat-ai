@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Image from 'next/image';
 
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
@@ -54,7 +55,7 @@ const LoginForm = () => {
     <S.Container onSubmit={handleSubmit}>
       <div>
         <S.logoBox>
-          <img src="./svgs/logo.svg" />
+          <Image src="/svgs/logo.svg" width={108} height={104} alt="logo" />
         </S.logoBox>
         <Text isBold={true}>API KEY</Text>
         <Input isValid={isValid} onChange={handleApiKeyUpdate} />
